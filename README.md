@@ -1,2 +1,3 @@
 # ipbswiftapi_v7
-library for communication with API IPB
+
+A package for new API version 7.
