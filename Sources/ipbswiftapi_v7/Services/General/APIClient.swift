@@ -30,7 +30,9 @@ public struct APIClient {
                 .eraseToAnyPublisher()
         }
         
-        debugPrintURLRequest(urlRequest)
+        if IPBSettings.isLoggingEnabled {
+            debugPrintURLRequest(urlRequest)
+        }
         
         return networkDispatcher.dispatch(request: urlRequest)
             .tryMap { (output: R.ReturnType) -> R.ReturnType in

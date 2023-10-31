@@ -9,6 +9,8 @@ import Foundation
 
 public struct IPBSettings {
     
+    public private(set) static var isLoggingEnabled: Bool = false
+    
     public static let emptyGuid = "00000000-0000-0000-0000-000000000000"
     
     public private(set) static var imageCompressionQuality = 1.0
@@ -50,6 +52,7 @@ public struct IPBSettings {
     public private(set) static var daDataAPIKey = ""
     
     private struct IPBSettingsConfiguration: Codable {
+        let isLoggingEnabled: Bool
         let imageCompressionQuality: Double
         
         let accessKeyEnterprise: String
@@ -108,6 +111,7 @@ public struct IPBSettings {
     }
     
     private static func configure(with config: IPBSettingsConfiguration) {
+        isLoggingEnabled = config.isLoggingEnabled
         imageCompressionQuality = config.imageCompressionQuality
         
         accessKeyEnterprise = config.accessKeyEnterprise

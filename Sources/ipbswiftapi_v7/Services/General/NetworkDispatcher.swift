@@ -25,7 +25,11 @@ public struct NetworkDispatcher {
         return urlSession
             .dataTaskPublisher(for: request)
             .tryMap { data, response in
-                print("Response: " + response.debugDescription)
+                
+                if IPBSettings.isLoggingEnabled {
+                    print("Response: " + response.debugDescription)
+                }
+                
                 if let response = response as? HTTPURLResponse,
                    !(200...299).contains(response.statusCode) {
                     throw httpError(response.statusCode)
