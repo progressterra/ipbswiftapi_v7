@@ -40,16 +40,16 @@ public struct APIClient {
                 case .success:
                     return output
                 case .warning:
-                    print("Warning ⚠️ \(String(describing: output.result.message ?? ""))")
+                    print("Warning ⚠️ \(String(describing: output.result.message ?? ""))\(debugPrintURLRequest(urlRequest))")
                     throw NetworkRequestError.customError(output.result.message ?? "")
                 case .errorServer:
-                    print("Error Server ☁️ \(String(describing: output.result.message ?? ""))")
+                    print("Error Server ☁️ \(String(describing: output.result.message ?? ""))\(debugPrintURLRequest(urlRequest))")
                     throw NetworkRequestError.serverError(output.result.message ?? "")
                 case .errorAuth:
-                    print("Error Authorization ❌ \(String(describing: output.result.message ?? ""))")
+                    print("Error Authorization ❌ \(String(describing: output.result.message ?? ""))\(debugPrintURLRequest(urlRequest))")
                     throw NetworkRequestError.unauthorized
                 case .errorAccess:
-                    print("Error Access 🔒 \(String(describing: output.result.message ?? ""))")
+                    print("Error Access 🔒 \(String(describing: output.result.message ?? ""))\(debugPrintURLRequest(urlRequest))")
                     throw NetworkRequestError.forbidden(output.result.message ?? "")
                 }
             }
