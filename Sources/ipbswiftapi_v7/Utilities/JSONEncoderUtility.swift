@@ -8,7 +8,11 @@
 import Foundation
 
 public struct JSONEncoderUtility {
-    public static let encoder = JSONEncoder()
+    public static let encoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        return encoder
+    }()
     
     public static func encode<T: Encodable>(_ value: T) throws -> String? {
         let jsonData = try encoder.encode(value)

@@ -76,7 +76,7 @@ public extension Request {
             if let contentType {
                 request.setValue(contentType, forHTTPHeaderField: "Content-Type")
             }
-            if let body = body, let httpBody = try? JSONEncoder().encode(body) {
+            if let body = body, let httpBody = try? JSONEncoderUtility.encoder.encode(body) {
                 request.httpBody = httpBody
             }
         }
