@@ -20,5 +20,5 @@ public struct RGDialogsClientsViewModel: Codable {
     public let dateUpdated: Date
     public let dateSoftRemoved: Date?
     public let clientMetaData: MetaDataClientDialogStore
-    public let isOwn: Bool
+    public let isOwn: Bool?
 }
