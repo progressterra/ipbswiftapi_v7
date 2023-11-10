@@ -28,6 +28,9 @@ public struct NetworkDispatcher {
                 
                 if IPBSettings.isLoggingEnabled {
                     print("Response: " + response.debugDescription)
+                    if let jsonString = String(data: data, encoding: .utf8) {
+                        print("Received JSON string:\n\(jsonString)")
+                    }
                 }
                 
                 if let response = response as? HTTPURLResponse,
