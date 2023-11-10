@@ -16,6 +16,7 @@ public struct JSONDecoderUtility {
         let dateFormats = [
             "yyyy-MM-dd'T'HH:mm:ss.SSSSSS",
             "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSZ",
+            "yyyy-MM-dd'T'HH:mm:ssZ",
             "yyyy-MM-dd'T'HH:mm:ss"
         ]
         
