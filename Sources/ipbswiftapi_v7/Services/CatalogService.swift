@@ -9,7 +9,7 @@ import Combine
 
 public struct CatalogService {
     
-    private let apiClient = APIClient(baseURL: IPBSettings.catalogBaseURL)
+    private let apiClient = APIClient(baseURLs: IPBSettings.catalogBaseURLs)
     
     public init() {}
     

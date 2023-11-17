@@ -8,16 +8,19 @@
 import Combine
 import Foundation
 
-public struct APIClient {
+public final class APIClient {
     
-    let baseURL: String!
+    let baseURLs: [String]!
     let networkDispatcher: NetworkDispatcher!
     
+    private var retryCount: Int = 0
+    private var currentURLIndex: Int = 0
+    
     public init(
-        baseURL: String,
+        baseURLs: [String],
         networkDispatcher: NetworkDispatcher = NetworkDispatcher()
     ) {
-        self.baseURL = baseURL
+        self.baseURLs = baseURLs
         self.networkDispatcher = networkDispatcher
     }
     
@@ -25,7 +28,7 @@ public struct APIClient {
     /// - Parameter request: Request to Dispatch
     /// - Returns: A publisher containing decoded data or an error
     public func dispatch<R: Request>(_ request: R) -> AnyPublisher<R.ReturnType, NetworkRequestError> {
-        guard let urlRequest = request.asURLRequest(baseURL: baseURL) else {
+        guard let urlRequest = request.asURLRequest(baseURL: baseURLs[currentURLIndex]) else {
             return Fail(outputType: R.ReturnType.self, failure: NetworkRequestError.badRequest("Ошибка запроса"))
                 .eraseToAnyPublisher()
         }
@@ -40,27 +43,55 @@ public struct APIClient {
                 case .success:
                     return output
                 case .warning:
-                    print("Warning ⚠️ \(String(describing: output.result.message ?? ""))\(debugPrintURLRequest(urlRequest))")
+                    print("Warning ⚠️ \(String(describing: output.result.message ?? ""))")
                     throw NetworkRequestError.customError(output.result.message ?? "")
                 case .errorServer:
-                    print("Error Server ☁️ \(String(describing: output.result.message ?? ""))\(debugPrintURLRequest(urlRequest))")
+                    print("Error Server ☁️ \(String(describing: output.result.message ?? ""))")
                     throw NetworkRequestError.serverError(output.result.message ?? "")
                 case .errorAuth:
-                    print("Error Authorization ❌ \(String(describing: output.result.message ?? ""))\(debugPrintURLRequest(urlRequest))")
+                    print("Error Authorization ❌ \(String(describing: output.result.message ?? ""))")
                     throw NetworkRequestError.unauthorized
                 case .errorAccess:
-                    print("Error Access 🔒 \(String(describing: output.result.message ?? ""))\(debugPrintURLRequest(urlRequest))")
+                    print("Error Access 🔒 \(String(describing: output.result.message ?? ""))")
                     throw NetworkRequestError.forbidden(output.result.message ?? "")
                 }
             }
-            .mapError { error -> NetworkRequestError in
+            .mapError { error in
                 if let networkError = error as? NetworkRequestError {
                     return networkError
                 } else {
                     return .unknownError("Непредвиденная ошибка")
                 }
             }
+            .catch { [weak self] error -> AnyPublisher<R.ReturnType, NetworkRequestError> in
+                guard let self else {
+                    return Fail(error: .customError("APIClient has been deallocated")).eraseToAnyPublisher()
+                }
+                
+                if self.shouldSwitchURL(for: error), self.retryCount < self.baseURLs.count - 1 {
+                    self.switchToNextURL()
+                    self.retryCount += 1
+                    print("📡 Host switched 📡")
+                    
+                    return self.dispatch(request)
+                } else {
+                    return Fail(error: error).eraseToAnyPublisher()
+                }
+            }
             .eraseToAnyPublisher()
+    }
+    
+    private func shouldSwitchURL(for error: NetworkRequestError) -> Bool {
+        switch error {
+        case .sslError(_), .timeoutError(_), .networkError(_):
+            return true
+        default:
+            return false
+        }
+    }
+    
+    private func switchToNextURL() {
+        currentURLIndex = (currentURLIndex + 1) % baseURLs.count
     }
     
     private func debugPrintURLRequest(_ request: URLRequest) {

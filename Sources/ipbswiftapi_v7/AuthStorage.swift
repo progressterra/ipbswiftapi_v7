@@ -23,7 +23,7 @@ public class AuthStorage: ObservableObject {
             print("Failed to convert token to Data for key: \(key)")
             return
         }
-        _ = KeychainUtility.save(key: key, data: data)
+        KeychainUtility.save(key: key, data: data)
         updateLoginStatus()
     }
     
@@ -32,12 +32,8 @@ public class AuthStorage: ObservableObject {
         return String(data: data, encoding: .utf8)
     }
     
-    private func removeToken(forKey key: String) {
-        _ = KeychainUtility.delete(key: key)
-    }
-    
     private func updateLoginStatus() {
-        isLoggedIn = refreshTokenCache != nil
+        isLoggedIn = !(refreshTokenCache?.isEmpty ?? true)
     }
 }
 
@@ -62,8 +58,8 @@ extension AuthStorage {
     }
     
     public func logout() {
-        removeToken(forKey: accessTokenKey)
-        removeToken(forKey: refreshTokenKey)
+        KeychainUtility.delete(key: accessTokenKey)
+        KeychainUtility.delete(key: refreshTokenKey)
         accessTokenCache = nil
         refreshTokenCache = nil
         updateLoginStatus()

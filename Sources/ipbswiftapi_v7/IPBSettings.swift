@@ -17,17 +17,17 @@ public struct IPBSettings {
     
     public private(set) static var accessKeyEnterprise = ""
     
-    public private(set) static var clientLoginBaseURL = ""
-    public private(set) static var catalogBaseURL = ""
-    public private(set) static var productBaseURL = ""
-    public private(set) static var cartBaseURL = ""
-    public private(set) static var documentsBaseURL = ""
-    public private(set) static var messengerBaseURL = ""
-    public private(set) static var paymentDataBaseURL = ""
-    public private(set) static var paymentsBaseURL = ""
-    public private(set) static var balanceRegisterBaseURL = ""
-    public private(set) static var sCRMBaseURL = ""
-    public private(set) static var mediaDataBaseURL = ""
+    public private(set) static var clientLoginBaseURLs = [""]
+    public private(set) static var catalogBaseURLs = [""]
+    public private(set) static var productBaseURLs = [""]
+    public private(set) static var cartBaseURLs = [""]
+    public private(set) static var documentsBaseURLs = [""]
+    public private(set) static var messengerBaseURLs = [""]
+    public private(set) static var paymentDataBaseURLs = [""]
+    public private(set) static var paymentsBaseURLs = [""]
+    public private(set) static var balanceRegisterBaseURLs = [""]
+    public private(set) static var sCRMBaseURLs = [""]
+    public private(set) static var mediaDataBaseURLs = [""]
     
     public private(set) static var wantThisDocumentID = ""
     public private(set) static var bankCardDocumentID = ""
@@ -56,17 +56,17 @@ public struct IPBSettings {
         let imageCompressionQuality: Double
         
         let accessKeyEnterprise: String
-        let clientLoginBaseURL: String
-        let catalogBaseURL: String
-        let productBaseURL: String
-        let cartBaseURL: String
-        let documentsBaseURL: String
-        let messengerBaseURL: String
-        let paymentDataBaseURL: String
-        let paymentsBaseURL: String
-        let balanceRegisterBaseURL: String
-        let sCRMBaseURL: String
-        let mediaDataBaseURL: String
+        let clientLoginBaseURLs: [String]
+        let catalogBaseURLs: [String]
+        let productBaseURLs: [String]
+        let cartBaseURLs: [String]
+        let documentsBaseURLs: [String]
+        let messengerBaseURLs: [String]
+        let paymentDataBaseURLs: [String]
+        let paymentsBaseURLs: [String]
+        let balanceRegisterBaseURLs: [String]
+        let sCRMBaseURLs: [String]
+        let mediaDataBaseURLs: [String]
         
         let wantThisDocumentID: String
         let bankCardDocumentID: String
@@ -115,17 +115,17 @@ public struct IPBSettings {
         imageCompressionQuality = config.imageCompressionQuality
         
         accessKeyEnterprise = config.accessKeyEnterprise
-        clientLoginBaseURL = config.clientLoginBaseURL
-        catalogBaseURL = config.catalogBaseURL
-        productBaseURL = config.productBaseURL
-        cartBaseURL = config.cartBaseURL
-        documentsBaseURL = config.documentsBaseURL
-        messengerBaseURL = config.messengerBaseURL
-        paymentDataBaseURL = config.paymentDataBaseURL
-        paymentsBaseURL = config.paymentsBaseURL
-        balanceRegisterBaseURL = config.balanceRegisterBaseURL
-        sCRMBaseURL = config.sCRMBaseURL
-        mediaDataBaseURL = config.mediaDataBaseURL
+        clientLoginBaseURLs = config.clientLoginBaseURLs
+        catalogBaseURLs = config.catalogBaseURLs
+        productBaseURLs = config.productBaseURLs
+        cartBaseURLs = config.cartBaseURLs
+        documentsBaseURLs = config.documentsBaseURLs
+        messengerBaseURLs = config.messengerBaseURLs
+        paymentDataBaseURLs = config.paymentDataBaseURLs
+        paymentsBaseURLs = config.paymentsBaseURLs
+        balanceRegisterBaseURLs = config.balanceRegisterBaseURLs
+        sCRMBaseURLs = config.sCRMBaseURLs
+        mediaDataBaseURLs = config.mediaDataBaseURLs
         
         wantThisDocumentID = config.wantThisDocumentID
         bankCardDocumentID = config.bankCardDocumentID

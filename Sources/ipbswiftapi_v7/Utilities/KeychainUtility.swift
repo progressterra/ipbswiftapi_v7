@@ -9,39 +9,36 @@ import Security
 import Foundation
 
 public struct KeychainUtility {
-
-    @discardableResult
-    public static func save(key: String, data: Data) -> OSStatus {
-        let query = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: key
-        ] as [String: Any]
-
-        let attributesToUpdate = [kSecValueData as String: data]
-
-        var status = SecItemUpdate(query as CFDictionary, attributesToUpdate as CFDictionary)
-        
-        if status == errSecItemNotFound {
-            var newItem = query
-            newItem[kSecValueData as String] = data
-            status = SecItemAdd(newItem as CFDictionary, nil)
+    
+    public static func save(key: String, data: Data) {
+        DispatchQueue.global(qos: .background).async {
+            var query = [
+                kSecClass as String: kSecClassGenericPassword,
+                kSecAttrAccount as String: key
+            ] as [String: Any]
+            
+            let accessible = kSecAttrAccessibleAfterFirstUnlock as String
+            let updateAttributes = [
+                kSecValueData as String: data,
+                kSecAttrAccessible as String: accessible
+            ]
+            query.merge(updateAttributes) { (_, new) in new }
+            
+            let status = SecItemUpdate(query as CFDictionary, updateAttributes as CFDictionary)
+            if status == errSecItemNotFound {
+                SecItemAdd(query as CFDictionary, nil)
+            }
         }
-        
-        if status != errSecSuccess, let errorMessage = SecCopyErrorMessageString(status, nil) {
-            print("Save to Keychain failed: \(errorMessage as String)")
-        }
-
-        return status
     }
     
     public static func load(key: String) -> Data? {
         let query = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
-            kSecReturnData as String: kCFBooleanTrue as Any,
+            kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne
         ] as [String: Any]
-
+        
         var item: CFTypeRef?
         let status = SecItemCopyMatching(query as CFDictionary, &item)
         
@@ -53,19 +50,18 @@ public struct KeychainUtility {
         return item as? Data
     }
     
-    @discardableResult
-    public static func delete(key: String) -> OSStatus {
-        let query = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: key
-        ] as [String: Any]
-        
-        let status = SecItemDelete(query as CFDictionary)
-        
-        if status != errSecSuccess, let errorMessage = SecCopyErrorMessageString(status, nil) {
-            print("Delete from Keychain failed: \(errorMessage as String)")
+    public static func delete(key: String) {
+        DispatchQueue.global(qos: .background).async {
+            let query = [
+                kSecClass as String: kSecClassGenericPassword,
+                kSecAttrAccount as String: key
+            ] as [String: Any]
+            
+            let status = SecItemDelete(query as CFDictionary)
+            
+            if status != errSecSuccess, let errorMessage = SecCopyErrorMessageString(status, nil) {
+                print("Delete from Keychain failed: \(errorMessage as String)")
+            }
         }
-        
-        return status
     }
 }

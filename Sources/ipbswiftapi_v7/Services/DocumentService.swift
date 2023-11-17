@@ -9,7 +9,7 @@ import Combine
 
 public struct DocumentService {
     
-    private let apiClient = APIClient(baseURL: IPBSettings.documentsBaseURL)
+    private let apiClient = APIClient(baseURLs: IPBSettings.documentsBaseURLs)
     
     public init() {}
     

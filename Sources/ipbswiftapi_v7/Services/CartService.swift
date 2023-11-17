@@ -9,7 +9,7 @@ import Combine
 
 public struct CartService {
     
-    private let apiClient = APIClient(baseURL: IPBSettings.cartBaseURL)
+    private let apiClient = APIClient(baseURLs: IPBSettings.cartBaseURLs)
     
     public init() {}
     

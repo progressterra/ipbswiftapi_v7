@@ -41,7 +41,9 @@ public struct NetworkDispatcher {
             }
             .decode(type: ReturnType.self, decoder: jsonDecoder)
             .mapError { error in
-                print("Error: \(error)")
+                if IPBSettings.isLoggingEnabled {
+                    print("Error: \(error)")
+                }
                 return handleError(error)
             }
             .eraseToAnyPublisher()
@@ -65,7 +67,16 @@ public struct NetworkDispatcher {
         case is Swift.DecodingError:
             return .decodingError(error.localizedDescription)
         case let urlError as URLError:
-            return .urlSessionFailed(urlError)
+            switch urlError.code {
+            case .timedOut:
+                return .timeoutError("Time out error")
+            case .cannotConnectToHost, .networkConnectionLost:
+                return .networkError("Network connection error")
+            case .secureConnectionFailed, .serverCertificateHasBadDate, .serverCertificateUntrusted, .serverCertificateHasUnknownRoot, .serverCertificateNotYetValid:
+                return .sslError("SSL error: \(urlError.localizedDescription)")
+            default:
+                return .urlSessionFailed(urlError)
+            }
         case let error as NetworkRequestError:
             return error
         default:

@@ -1,6 +1,6 @@
 //
 //  NetworkRequestErrorEnum.swift
-//  
+//
 //
 //  Created by Artemy Volkov on 09.08.2023.
 //
@@ -20,4 +20,7 @@ public enum NetworkRequestError: LocalizedError, Equatable {
     case urlSessionFailed(_ error: URLError)
     case unknownError(String)
     case customError(String)
+    case timeoutError(String)
+    case networkError(String)
+    case sslError(String)
 }

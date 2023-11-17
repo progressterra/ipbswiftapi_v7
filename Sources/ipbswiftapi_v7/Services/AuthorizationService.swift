@@ -9,7 +9,7 @@ import Combine
 
 public struct AuthorizationService {
     
-    private let apiClient = APIClient(baseURL: IPBSettings.clientLoginBaseURL)
+    private let apiClient = APIClient(baseURLs: IPBSettings.clientLoginBaseURLs)
     
     public init() {}
     

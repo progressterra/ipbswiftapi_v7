@@ -9,7 +9,7 @@ import Combine
 
 public struct ProductService {
     
-    private let apiClient = APIClient(baseURL: IPBSettings.productBaseURL)
+    private let apiClient = APIClient(baseURLs: IPBSettings.productBaseURLs)
     
     public init() {}
     

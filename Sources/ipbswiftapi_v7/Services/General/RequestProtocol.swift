@@ -37,7 +37,7 @@ public extension Request {
     var media: [MediaModel]? { nil }
     
     /// Transforms an Request into a standard URL request
-    /// - Parameter baseURL: API Base URL to be used
+    /// - Parameter BaseURLs: API Base URL to be used
     /// - Returns: A ready to use URLRequest
     func asURLRequest(baseURL: String) -> URLRequest? {
         guard var urlComponents = URLComponents(string: baseURL) else { return nil }

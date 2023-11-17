@@ -9,7 +9,7 @@ import Combine
 
 public struct MediaDataService {
     
-    private let apiClient = APIClient(baseURL: IPBSettings.mediaDataBaseURL)
+    private let apiClient = APIClient(baseURLs: IPBSettings.mediaDataBaseURLs)
     
     public init() {}
     

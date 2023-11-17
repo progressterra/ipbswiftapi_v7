@@ -9,7 +9,7 @@ import Combine
 
 public struct PaymentsService {
     
-    private let apiClient = APIClient(baseURL: IPBSettings.paymentsBaseURL)
+    private let apiClient = APIClient(baseURLs: IPBSettings.paymentsBaseURLs)
     
     public init() {}
     

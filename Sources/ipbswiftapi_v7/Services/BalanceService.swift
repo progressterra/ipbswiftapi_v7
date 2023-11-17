@@ -9,7 +9,7 @@ import Combine
 
 public struct BalanceService {
     
-    private let apiClient = APIClient(baseURL: IPBSettings.balanceRegisterBaseURL)
+    private let apiClient = APIClient(baseURLs: IPBSettings.balanceRegisterBaseURLs)
     
     public init() {}
     

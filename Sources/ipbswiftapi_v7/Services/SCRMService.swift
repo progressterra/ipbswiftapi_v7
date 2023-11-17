@@ -9,7 +9,7 @@ import Combine
 
 public struct SCRMService {
     
-    private let apiClient = APIClient(baseURL: IPBSettings.sCRMBaseURL)
+    private let apiClient = APIClient(baseURLs: IPBSettings.sCRMBaseURLs)
     
     public init() {}
     

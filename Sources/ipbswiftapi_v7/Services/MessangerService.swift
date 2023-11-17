@@ -9,7 +9,7 @@ import Combine
 
 public struct MessengerService {
     
-    private let apiClient = APIClient(baseURL: IPBSettings.messengerBaseURL)
+    private let apiClient = APIClient(baseURLs: IPBSettings.messengerBaseURLs)
     
     public init() {}
     
