@@ -7,7 +7,11 @@
 
 import Foundation
 
-public struct RFCatalogCategoryViewModel: Codable {
+public struct RFCatalogCategoryViewModel: Codable, Hashable {
+    public static func == (lhs: RFCatalogCategoryViewModel, rhs: RFCatalogCategoryViewModel) -> Bool {
+        lhs.idUnique == rhs.idUnique
+    }
+    
     public let idParentCategory: String?
     public let displayingType: TypeDisplayCategoryCatalog
     public let formatViewProductType: TypeFormatViewProduct

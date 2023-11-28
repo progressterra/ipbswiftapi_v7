@@ -7,7 +7,11 @@
 
 import Foundation
 
-public struct RGEntityMediaDataViewModel: Codable {
+public struct RGEntityMediaDataViewModel: Codable, Hashable {
+    public static func == (lhs: RGEntityMediaDataViewModel, rhs: RGEntityMediaDataViewModel) -> Bool {
+        lhs.idUnique == rhs.idUnique
+    }
+    
     public let idEntity: String
     public let entityTypeName: String?
     public let privateForClientID: String?
@@ -49,11 +53,11 @@ public struct RGEntityMediaDataViewModel: Codable {
     }
 }
 
-public struct ListInfoImageWrapper: Codable {
+public struct ListInfoImageWrapper: Codable, Hashable {
     public let listInfoImage: [InfoImage]?
 }
 
-public struct InfoImage: Codable {
+public struct InfoImage: Codable, Hashable {
     public let url: String?
     public let sizeType: TypeSize
     public let width: Int

@@ -8,7 +8,11 @@
 import Foundation
 
 // MARK: - CatalogItem model
-public struct CatalogItem: Codable {
+public struct CatalogItem: Codable, Hashable {
+    public static func == (lhs: CatalogItem, rhs: CatalogItem) -> Bool {
+        rhs.itemCategory.idUnique == lhs.itemCategory.idUnique
+    }
+    
     public let itemCategory: RFCatalogCategoryViewModel
     public let listChildItems: [CatalogItem]?
 }
