@@ -5,9 +5,6 @@
 `ipbswiftapi_v7` is a Swift package designed to simplify communication with [iProBonus](https://iprobonus.com) platform APIs. It provides a suite of services for functionalities like authorization, balance management, shopping cart, product catalog, document handling, media data, messaging, order processing, payments, and customer relationship management. Built with SwiftUI in mind, it employs a reactive approach using Combine for seamless integration into modern iOS development workflows.
 
 ## Features
-
-- **Comprehensive Service Coverage:** Services include authorization, balance management, shopping cart, product catalog, document handling, media data, messaging, order processing, payments, and customer relationship management.
-- **SwiftUI Optimized:** Designed specifically for integration with SwiftUI applications.
 - **Reactive Approach with Combine:** Facilitates efficient handling of asynchronous data and operations.
 - **Secure Token Management:** Securely stores access tokens in Keychain, enhancing data security and user privacy.
 - **Custom Request Protocol:** Simplifies API communication request creation.
