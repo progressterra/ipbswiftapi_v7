@@ -1,6 +1,6 @@
 //
 //  RequestProtocol.swift
-//  
+//
 //
 //  Created by Artemy Volkov on 09.08.2023.
 //
@@ -23,6 +23,12 @@ public protocol Request {
     var queryParameters: QueryParameters? { get }
     /// Set if you need to perform multipart/form-data request
     var media: [MediaModel]? { get }
+    
+    /// Transforms an Request into a standard URL request
+    /// - Parameter BaseURLs: API Base URL to be used
+    /// - Parameter token: Use if you want to rebuild request with new token
+    /// - Returns: A ready to use URLRequest
+    func asURLRequest(baseURL: String, token: String?) -> URLRequest?
 }
 
 public extension Request {
@@ -36,13 +42,10 @@ public extension Request {
     var queryParameters: QueryParameters? { nil }
     var media: [MediaModel]? { nil }
     
-    /// Transforms an Request into a standard URL request
-    /// - Parameter BaseURLs: API Base URL to be used
-    /// - Returns: A ready to use URLRequest
-    func asURLRequest(baseURL: String) -> URLRequest? {
+    func asURLRequest(baseURL: String, token: String? = nil) -> URLRequest? {
         guard var urlComponents = URLComponents(string: baseURL) else { return nil }
         urlComponents.path = "\(urlComponents.path)\(path)"
-        
+                
         if let params = queryParameters {
             var queryItems: [URLQueryItem] = []
             let mirror = Mirror(reflecting: params)
@@ -58,14 +61,17 @@ public extension Request {
         var request = URLRequest(url: finalURL)
         request.httpMethod = method.rawValue
         
+        /// If token is not set, use the one from the request
+        let effectiveToken = token ?? self.token
+
         if let headers {
             request.allHTTPHeaderFields = headers
         }
         if let accept {
             request.setValue(accept, forHTTPHeaderField: "Accept")
         }
-        if let token {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        if let effectiveToken, !effectiveToken.isEmpty {
+            request.setValue("Bearer \(effectiveToken)", forHTTPHeaderField: "Authorization")
         }
         
         if let media {

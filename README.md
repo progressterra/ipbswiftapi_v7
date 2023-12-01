@@ -48,102 +48,65 @@ To integrate `ipbswiftapi_v7` into your Swift project using the Swift Package Ma
 
 ## Usage
 
-### Authorization Service
-
-Example of using the `AuthorizationService` for login, token refresh, and logout functionalities in `ipbswiftui_v7` implementation.
+### Authorize and get user cart
 
 ```swift
-// Example usage of AuthorizationService
-public func startLogin() {
-    authService.startLogin(with: phoneNumber)
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] completion in
-            switch completion {
-            case .failure(let error):
-                self?.error = error
-            case .finished:
-                break
-            }
-        } receiveValue: { [weak self] result in
-            self?.tempToken = result.data?.tempToken
-            self?.secondForResendSMS = result.data?.secondForResendSMS ?? 0
-        }
-        .store(in: &subscriptions)
-}
+import Combine
+import ipbswiftapi_v7
 
-public func endLogin() {
-    guard let tempToken else { return }
-    
-    authService.endLogin(with: codeFromSMS, tempToken: tempToken)
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] completion in
-            switch completion {
-            case .failure(let error):
-                self?.error = error
-            case .finished:
-                break
-            }
-        } receiveValue: { [unowned self] value in
-            self.endLoginStatus = value.result.status
-            if value.result.status == .success {
-                AuthStorage.shared.updateTokenStorage(for: value.data)
-            }
-        }
-        .store(in: &subscriptions)
-}
+class ViewModel: ObservableObject {
 
-public func logoutToken() {
-    authService
-        .logoutToken(
-            refreshToken: AuthStorage.shared.getRefreshToken(),
-            accessToken: AuthStorage.shared.getAccessToken()
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] completion in
-            switch completion {
-            case .failure(let error):
-                if error == .unauthorized { // if NetworkRequestErorr case is unauthorized you should refresh JWT tokens and retry operation.
-                    self?.refreshTokenAnd {
-                        self?.logoutToken()
-                    }
+    @Published var phoneNumber = ""
+    @Published var codeFromSMS = ""
+    @Published var cartResult: DHSaleHeadAsOrderViewModel?
+    @Published var error: NetworkRequestError?
+
+    private let authService = AuthorizationService()
+    private let cartService = CartService()
+    private var tempToken: String?
+    private var subscriptions = Set<AnyCancellable>()
+
+    func startLogin() {
+        authService.startLogin(with: phoneNumber)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                if case .failure(let error) = $0 {
+                    self?.error = error
                 }
-            case .finished:
-                break
+            } receiveValue: { [weak self] value in
+                self?.tempToken = value.data?.tempToken
             }
-        } receiveValue: { [weak self] result in
-            if result.result.status == .success {
-                AuthStorage.shared.logout()
-                self?.isLoggedIn = false
-            }
-        }
-        .store(in: &subscriptions)
-}
-
-// Example of how you can handle topken refersh
-public func refreshTokenAnd(_ retry: @escaping () -> Void) {
-    if refreshTokenPublisher == nil {
-        refreshTokenPublisher = authService.refreshToken(with: AuthStorage.shared.getRefreshToken())
-            .share()
-            .eraseToAnyPublisher()
+            .store(in: &subscriptions)
     }
-    
-    refreshTokenPublisher?
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] completion in
-            switch completion {
-            case .failure(let error):
-                print("Refresh token error: \(error)")
-            case .finished:
-                self?.refreshTokenPublisher = nil
-                break
+        
+    func endLogin() {
+        guard let tempToken else { return }
+        authService.endLogin(with: codeFromSMS, tempToken: tempToken)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                if case .failure(let error) = $0 {
+                    self?.error = error
+                }
+            } receiveValue: { [weak self] value in
+                AuthStorage.shared.updateTokenStorage(for: value.data) // save tokens to Keychain
+                self?.phoneNumber = ""
+                self?.codeFromSMS = ""
             }
-        } receiveValue: { result in
-            if result.result.status == .success {
-                AuthStorage.shared.updateTokenStorage(for: result.data)
-                retry()
+            .store(in: &subscriptions)
+    }
+        
+    func getCart() {
+        cartService.getCart()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                if case .failure(let error) = $0 {
+                    self?.error = error
+                }
+            } receiveValue: { [weak self] value in
+                self?.cartResult = value.data
             }
-        }
-        .store(in: &subscriptions)
+            .store(in: &subscriptions)
+    }
 }
 ```
 
@@ -162,8 +125,6 @@ We are excited to have contributors who can help us improve and expand `ipbswift
 - **Commit Your Changes:** Write meaningful commit messages. Include a reference to the issue number if applicable.
 - **Push Your Changes and Create a Pull Request:** Once you're happy with your changes, push your branch to GitHub and create a pull request against the `main` branch of the `ipbswiftapi_v7` repository.
 - **Code Review:** Once your pull request is opened, maintainers will review your code and might request changes or provide feedback.
-
-### High Load Development & Revolutionary Approach
 
 `ipbswiftapi_v7` is under high-load development, aiming to revolutionize how we build applications. We're striving to create a package that not only simplifies API communication for Swift developers but also brings innovative features and approaches to the Swift and SwiftUI community. By contributing, you're participating in shaping the future of app development.
 

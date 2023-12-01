@@ -1,6 +1,6 @@
 //
-//  NetworkService.swift
-//  
+//  NetworkDispatcher.swift
+//
 //
 //  Created by Artemy Volkov on 08.07.2023.
 //
@@ -51,7 +51,7 @@ public struct NetworkDispatcher {
     
     private func httpError(_ statusCode: Int) -> NetworkRequestError {
         switch statusCode {
-        case 400: return .badRequest("Network Error 400\nBad Request")
+        case 400: return .badRequest("Ошибка запроса")
         case 401: return .unauthorized
         case 403: return .forbidden("Доступ заперещен")
         case 404: return .notFound("Не найдено")

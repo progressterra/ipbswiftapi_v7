@@ -1,6 +1,6 @@
 //
 //  APIClient.swift
-//  
+//
 //
 //  Created by Artemy Volkov on 08.07.2023.
 //
@@ -26,9 +26,10 @@ public final class APIClient {
     
     /// Dispatches a Request and returns a publisher
     /// - Parameter request: Request to Dispatch
+    /// - Parameter token: Token used to retry request with refreshed token
     /// - Returns: A publisher containing decoded data or an error
-    public func dispatch<R: Request>(_ request: R) -> AnyPublisher<R.ReturnType, NetworkRequestError> {
-        guard let urlRequest = request.asURLRequest(baseURL: baseURLs[currentURLIndex]) else {
+    public func dispatch<R: Request>(_ request: R, token: String? = nil) -> AnyPublisher<R.ReturnType, NetworkRequestError> {
+        guard let urlRequest = request.asURLRequest(baseURL: baseURLs[currentURLIndex], token: token) else {
             return Fail(outputType: R.ReturnType.self, failure: NetworkRequestError.badRequest("Ошибка запроса"))
                 .eraseToAnyPublisher()
         }
@@ -60,7 +61,7 @@ public final class APIClient {
                 if let networkError = error as? NetworkRequestError {
                     return networkError
                 } else {
-                    return .unknownError("Непредвиденная ошибка")
+                    return .unknownError("Непредвиденная ошибка ❌")
                 }
             }
             .catch { [weak self] error -> AnyPublisher<R.ReturnType, NetworkRequestError> in
@@ -68,30 +69,29 @@ public final class APIClient {
                     return Fail(error: .customError("APIClient has been deallocated")).eraseToAnyPublisher()
                 }
                 
-                if self.shouldSwitchURL(for: error), self.retryCount < self.baseURLs.count - 1 {
-                    self.switchToNextURL()
-                    self.retryCount += 1
-                    print("📡 Host switched 📡")
-                    
-                    return self.dispatch(request)
-                } else {
+                switch error {
+                case .unauthorized:
+                    return AuthStorage.shared.refreshToken()
+                        .delay(for: 0.1, scheduler: DispatchQueue.main)
+                        .flatMap { self.dispatch(request, token: AuthStorage.shared.getAccessToken()) }
+                        .eraseToAnyPublisher()
+                case .sslError(_), .timeoutError(_), .networkError(_):
+                    if self.retryCount < self.baseURLs.count - 1 {
+                        self.switchToNextURL()
+                        print("📡 Host switched 📡")
+                        return self.dispatch(request)
+                    }
+                    fallthrough
+                default:
                     return Fail(error: error).eraseToAnyPublisher()
                 }
             }
             .eraseToAnyPublisher()
     }
     
-    private func shouldSwitchURL(for error: NetworkRequestError) -> Bool {
-        switch error {
-        case .sslError(_), .timeoutError(_), .networkError(_):
-            return true
-        default:
-            return false
-        }
-    }
-    
     private func switchToNextURL() {
         currentURLIndex = (currentURLIndex + 1) % baseURLs.count
+        retryCount += 1
     }
     
     private func debugPrintURLRequest(_ request: URLRequest) {
@@ -101,7 +101,7 @@ public final class APIClient {
         let urlAsString = request.url?.absoluteString ?? ""
         let urlComponents = NSURLComponents(string: urlAsString)
         
-        let method = request.httpMethod != nil ? "\(request.httpMethod!)": ""
+        let method = request.httpMethod != nil ? "\(request.httpMethod!)" : ""
         let path = "\(urlComponents?.path ?? "")"
         let query = "\(urlComponents?.query ?? "")"
         let host = "\(urlComponents?.host ?? "")"

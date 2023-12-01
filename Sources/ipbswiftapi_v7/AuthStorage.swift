@@ -1,10 +1,15 @@
 import Foundation
+import Combine
 
 public class AuthStorage: ObservableObject {
     
     public static let shared = AuthStorage()
     
     @Published public var isLoggedIn: Bool = false
+    
+    private let authService = AuthorizationService()
+    private var refreshTokenPublisher: AnyPublisher<ResultData<ResultAuthAsJWT>, NetworkRequestError>?
+    private var subscriptions = Set<AnyCancellable>()
     
     private let accessTokenKey = "accessToken"
     private let refreshTokenKey = "refreshToken"
@@ -37,6 +42,55 @@ public class AuthStorage: ObservableObject {
     }
 }
 
+// MARK: Token update
+extension AuthStorage {
+    /// Refreshes the authentication token.
+    ///
+    /// This method initializes a token refresh process and returns a publisher that emits a completion event on success or an `NetworkRequestError` on failure. It ensures that only one token refresh process is active at a time using `refreshTokenPublisher`.
+    ///
+    /// - Returns: An `AnyPublisher<Void, NetworkRequestError>` that signals completion or failure of the token refresh operation.
+    /// - Initializes `refreshTokenPublisher` if it is `nil`, by calling `authService.refreshToken` with the current refresh token. This publisher is shared and type-erased to `AnyPublisher`.
+    /// - Subscribes to `refreshTokenPublisher` and handles the result:
+    ///   - On success and if the result status is `.success`, updates the token storage with new data and completes the future with success.
+    /// Usage:
+    /// - Typically used when an API request returns an unauthorized error, indicating the need for a token refresh.
+    internal func refreshToken() -> AnyPublisher<Void, NetworkRequestError> {
+        return Future<Void, NetworkRequestError> { [weak self] promise in
+            guard let self else {
+                promise(.failure(NetworkRequestError.customError("AuthStorage is deallocated")))
+                return
+            }
+            
+            if self.refreshTokenPublisher == nil {
+                self.refreshTokenPublisher = self.authService.refreshToken(with: AuthStorage.shared.getRefreshToken())
+                    .share()
+                    .eraseToAnyPublisher()
+            }
+            
+            self.refreshTokenPublisher?
+                .receive(on: DispatchQueue.main)
+                .sink { completion in
+                    switch completion {
+                    case .failure(let error):
+                        promise(.failure(error))
+                    case .finished:
+                        break
+                    }
+                } receiveValue: { [weak self] result in
+                    if result.result.status == .success {
+                        self?.updateTokenStorage(for: result.data)
+                        promise(.success(()))
+                    } else {
+                        promise(.failure(NetworkRequestError.customError("Token refresh failed with status: \(result.result.status)")))
+                    }
+                }
+                .store(in: &(self.subscriptions))
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - Token management
 extension AuthStorage {
     public func getAccessToken() -> String {
         accessTokenCache ?? loadToken(forKey: accessTokenKey) ?? ""
