@@ -8,6 +8,7 @@ public class AuthStorage: ObservableObject {
     @Published public var isLoggedIn: Bool = false
     
     private let authService = AuthorizationService()
+    private let semaphore = DispatchSemaphore(value: 1)
     private var refreshTokenPublisher: AnyPublisher<ResultData<ResultAuthAsJWT>, NetworkRequestError>?
     private var subscriptions = Set<AnyCancellable>()
     
@@ -42,7 +43,7 @@ public class AuthStorage: ObservableObject {
     }
 }
 
-// MARK: Token update
+// MARK: Tokens update
 extension AuthStorage {
     /// Refreshes the authentication token.
     ///
@@ -55,36 +56,42 @@ extension AuthStorage {
     /// Usage:
     /// - Typically used when an API request returns an unauthorized error, indicating the need for a token refresh.
     internal func refreshToken() -> AnyPublisher<Void, NetworkRequestError> {
-        return Future<Void, NetworkRequestError> { [weak self] promise in
-            guard let self else {
-                promise(.failure(NetworkRequestError.customError("AuthStorage is deallocated")))
-                return
-            }
-            
-            if self.refreshTokenPublisher == nil {
-                self.refreshTokenPublisher = self.authService.refreshToken(with: AuthStorage.shared.getRefreshToken())
-                    .share()
-                    .eraseToAnyPublisher()
-            }
-            
-            self.refreshTokenPublisher?
-                .receive(on: DispatchQueue.main)
-                .sink { completion in
-                    switch completion {
-                    case .failure(let error):
-                        promise(.failure(error))
-                    case .finished:
-                        break
-                    }
-                } receiveValue: { [weak self] result in
-                    if result.result.status == .success {
-                        self?.updateTokenStorage(for: result.data)
-                        promise(.success(()))
-                    } else {
-                        promise(.failure(NetworkRequestError.customError("Token refresh failed with status: \(result.result.status)")))
-                    }
+        Deferred {
+            Future<Void, NetworkRequestError> { [weak self] promise in
+                guard let self else {
+                    promise(.failure(.customError("AuthStorage is deallocated")))
+                    return
                 }
-                .store(in: &(self.subscriptions))
+                
+                if refreshTokenPublisher == nil {
+                    semaphore.wait()
+                    refreshTokenPublisher = authService.refreshToken(with: getRefreshToken())
+                        .handleEvents(receiveCompletion: { _ in
+                            self.semaphore.signal()
+                            self.refreshTokenPublisher = nil
+                        })
+                        .share()
+                        .eraseToAnyPublisher()
+                }
+                
+                refreshTokenPublisher?
+                    .sink { completion in
+                        switch completion {
+                        case .failure(let error):
+                            promise(.failure(error))
+                        case .finished:
+                            break
+                        }
+                    } receiveValue: { [weak self] result in
+                        if result.result.status == .success {
+                            self?.updateTokenStorage(for: result.data)
+                            promise(.success(()))
+                        } else {
+                            promise(.failure(.customError("Token refresh failed with status: \(result.result.status)")))
+                        }
+                    }
+                    .store(in: &subscriptions)
+            }
         }
         .eraseToAnyPublisher()
     }

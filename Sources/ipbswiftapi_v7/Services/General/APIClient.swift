@@ -30,7 +30,7 @@ public final class APIClient {
     /// - Returns: A publisher containing decoded data or an error
     public func dispatch<R: Request>(_ request: R, token: String? = nil) -> AnyPublisher<R.ReturnType, NetworkRequestError> {
         guard let urlRequest = request.asURLRequest(baseURL: baseURLs[currentURLIndex], token: token) else {
-            return Fail(outputType: R.ReturnType.self, failure: NetworkRequestError.badRequest("Ошибка запроса"))
+            return Fail(outputType: R.ReturnType.self, failure: .badRequest("Ошибка запроса"))
                 .eraseToAnyPublisher()
         }
         
@@ -72,14 +72,12 @@ public final class APIClient {
                 switch error {
                 case .unauthorized:
                     return AuthStorage.shared.refreshToken()
-                        .delay(for: 0.1, scheduler: DispatchQueue.main)
                         .flatMap { self.dispatch(request, token: AuthStorage.shared.getAccessToken()) }
                         .eraseToAnyPublisher()
                 case .sslError(_), .timeoutError(_), .networkError(_):
-                    if self.retryCount < self.baseURLs.count - 1 {
-                        self.switchToNextURL()
-                        print("📡 Host switched 📡")
-                        return self.dispatch(request)
+                    if retryCount < baseURLs.count - 1 {
+                        switchToNextURL()
+                        return dispatch(request)
                     }
                     fallthrough
                 default:
