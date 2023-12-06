@@ -45,6 +45,55 @@ To integrate `ipbswiftapi_v7` into your Swift project using the Swift Package Ma
 - Check that your Xcode version and project settings are up-to-date and compatible with the package.
 - For issues or errors, refer to the [GitHub Issues page](https://github.com/progressterra/ipbswiftapi_v7/issues) for `ipbswiftapi_v7`.
 
+## Configuration
+
+Before using `ipbswiftapi_v7`, you need to configure it by creating a `IPBSettingConfig.json` file in your project folder. This file contains various settings required for the package to function properly.
+
+Create a file named `IPBSettingConfig.json` with the following structure:
+
+```json
+{
+    "isLoggingEnabled": true ,
+    "imageCompressionQuality": 1.0,
+    "accessKeyEnterprise": "[your access key]",
+    "clientLoginBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
+    "catalogBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
+    "productBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
+    "cartBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
+    "documentsBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
+    "messengerBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
+    "paymentDataBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
+    "paymentsBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
+    "balanceRegisterBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
+    "sCRMBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
+    "mediaDataBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
+    "wantThisDocumentID": "[document ID]",
+    "bankCardDocumentID": "[document ID]",
+    "ruPassportID": "[document ID]",
+    "ByKzKgAmPassportID": "[document ID]",
+    "TgUzUaPassportID": "[document ID]",
+    "topSalesCategoryID": "[category ID]",
+    "promoProductsCategoryID": "[category ID]",
+    "newProductsCategoryID": "[category ID]",
+    "techSupportID": "[support ID]",
+    "ordersSupportID": "[support ID]",
+    "wantThisSupportID": "[support ID]",
+    "documentsSupportID": "[support ID]",
+    "authDescription": "[authorization description]",
+    "daDataBaseURL": "https://suggestions.dadata.ru/suggestions/api/4_1/rs",
+    "daDataAPIKey": "[DaData API key]"
+}
+```
+Replace [primary base URL], [secondary base URL], and so on with the actual URLs of services. The ipbswiftapi_v7 package will attempt to connect to the primary URL first. If it encounters any errors, it will automatically try the next URL in the list, ensuring continuous and stable operation of your application.
+Replace other placeholders with your actual configuration values.
+
+### Loading the Configuration
+
+To load this configuration, call `IPBSettings.loadConfiguration()` at your app's launch. This will read the settings from `IPBSettingConfig.json` and apply them to the `ipbswiftapi_v7` package.
+
+```swift
+IPBSettings.loadConfiguration()
+```
 
 ## Usage
 
@@ -64,7 +113,7 @@ class ViewModel: ObservableObject {
     private let authService = AuthorizationService()
     private let cartService = CartService()
     private var tempToken: String?
-    private var subscriptions = Set<AnyCancellable>()
+    private var subscriptions: Set<AnyCancellable> = []
 
     init() {}
 
