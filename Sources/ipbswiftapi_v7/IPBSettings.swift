@@ -1,6 +1,6 @@
 //
 //  IPBSettings.swift
-// 
+//
 //
 //  Created by Artemy Volkov on 06.07.2023.
 //
@@ -16,6 +16,7 @@ public struct IPBSettings {
     public private(set) static var imageCompressionQuality = 1.0
     
     public private(set) static var accessKeyEnterprise = ""
+    public private(set) static var accessTokenForUnauthorizedUser = ""
     
     public private(set) static var clientLoginBaseURLs = [""]
     public private(set) static var catalogBaseURLs = [""]
@@ -55,7 +56,9 @@ public struct IPBSettings {
         let isLoggingEnabled: Bool
         let imageCompressionQuality: Double
         
+        let accessTokenForUnauthorizedUser: String
         let accessKeyEnterprise: String
+        
         let clientLoginBaseURLs: [String]
         let catalogBaseURLs: [String]
         let productBaseURLs: [String]
@@ -115,6 +118,8 @@ public struct IPBSettings {
         imageCompressionQuality = config.imageCompressionQuality
         
         accessKeyEnterprise = config.accessKeyEnterprise
+        accessTokenForUnauthorizedUser = config.accessTokenForUnauthorizedUser
+        
         clientLoginBaseURLs = config.clientLoginBaseURLs
         catalogBaseURLs = config.catalogBaseURLs
         productBaseURLs = config.productBaseURLs

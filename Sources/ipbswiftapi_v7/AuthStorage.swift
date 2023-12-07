@@ -97,10 +97,10 @@ extension AuthStorage {
     }
 }
 
-// MARK: - Token management
+// MARK: - Tokens management
 extension AuthStorage {
     public func getAccessToken() -> String {
-        accessTokenCache ?? loadToken(forKey: accessTokenKey) ?? ""
+        accessTokenCache ?? loadToken(forKey: accessTokenKey) ?? IPBSettings.accessTokenForUnauthorizedUser
     }
     
     public func getRefreshToken() -> String {

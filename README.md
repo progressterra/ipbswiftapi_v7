@@ -56,6 +56,7 @@ Create a file named `IPBSettingConfig.json` with the following structure:
     "isLoggingEnabled": true ,
     "imageCompressionQuality": 1.0,
     "accessKeyEnterprise": "[your access key]",
+    "accessTokenForUnauthorizedUser": "[your access token]",
     "clientLoginBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
     "catalogBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
     "productBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
