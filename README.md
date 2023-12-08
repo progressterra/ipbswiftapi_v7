@@ -21,23 +21,18 @@ To integrate `ipbswiftapi_v7` into your Swift project using the Swift Package Ma
    - Launch Xcode and open your project.
 
 2. **Add Package Dependency:**
-   - Navigate to `File` > `Swift Packages` > `Add Package Dependency...`.
+   - Navigate to `File` > `Add Package Dependencies...`.
    - Enter the package repository URL: `https://github.com/progressterra/ipbswiftapi_v7.git`.
-   - Click `Next`.
 
 3. **Specify the Version:**
    - Select the version of `ipbswiftapi_v7` you wish to use.
-   - Click `Next`.
+   - Click `Add Package`.
 
-4. **Select Package Products:**
-   - Choose `ipbswiftapi_v7` from the list of packages.
-   - Click `Finish`.
-
-5. **Import and Use the Package:**
+4. **Import and Use the Package:**
    - In your Swift files where you want to use the package, add `import ipbswiftapi_v7`.
    - Start utilizing the package's functionalities.
 
-6. **Build Your Project:**
+5. **Build Your Project:**
    - Compile your project to fetch and build the `ipbswiftapi_v7` package.
 
 ### Troubleshooting
