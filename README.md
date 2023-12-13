@@ -111,8 +111,6 @@ class ViewModel: ObservableObject {
     private var tempToken: String?
     private var subscriptions: Set<AnyCancellable> = []
 
-    init() {}
-
     func startLogin() {
         authService.startLogin(with: phoneNumber)
             .receive(on: DispatchQueue.main)

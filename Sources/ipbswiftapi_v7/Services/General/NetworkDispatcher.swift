@@ -84,3 +84,33 @@ public struct NetworkDispatcher {
         }
     }
 }
+
+extension NetworkDispatcher {
+    /// Dispatches a URLRequest and returns a publisher with raw data
+    /// - Parameter request: URLRequest
+    /// - Returns: A publisher with raw data or an error
+    public func dispatchRawData(request: URLRequest) -> AnyPublisher<Data, NetworkRequestError> {
+        return urlSession
+            .dataTaskPublisher(for: request)
+            .tryMap { data, response in
+                if IPBSettings.isLoggingEnabled {
+                    print("Response: " + response.debugDescription)
+                    print("Received Data Size: \(data.count) bytes")
+                }
+
+                if let response = response as? HTTPURLResponse,
+                   !(200...299).contains(response.statusCode) {
+                    throw httpError(response.statusCode)
+                }
+
+                return data
+            }
+            .mapError { error in
+                if IPBSettings.isLoggingEnabled {
+                    print("Error: \(error)")
+                }
+                return handleError(error)
+            }
+            .eraseToAnyPublisher()
+    }
+}
