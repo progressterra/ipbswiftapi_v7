@@ -25,10 +25,7 @@ public class AuthStorage: ObservableObject {
     }
     
     private func saveToken(_ token: String, forKey key: String) {
-        guard let data = token.data(using: .utf8) else {
-            print("Failed to convert token to Data for key: \(key)")
-            return
-        }
+        guard let data = token.data(using: .utf8) else { return }
         KeychainUtility.save(key: key, data: data)
         updateLoginStatus()
     }
@@ -58,8 +55,8 @@ extension AuthStorage {
     internal func refreshToken() -> AnyPublisher<Void, NetworkRequestError> {
         Deferred {
             Future<Void, NetworkRequestError> { [weak self] promise in
-                guard let self else {
-                    promise(.failure(.customError("AuthStorage is deallocated")))
+                guard let self, !getRefreshToken().isEmpty else {
+                    promise(.failure(.customError("Tokens could not be refreshed")))
                     return
                 }
                 

@@ -42,8 +42,7 @@ public struct KeychainUtility {
         var item: CFTypeRef?
         let status = SecItemCopyMatching(query as CFDictionary, &item)
         
-        if status != errSecSuccess, let errorMessage = SecCopyErrorMessageString(status, nil) {
-            print("Load from Keychain failed: \(errorMessage as String)")
+        if status != errSecSuccess {
             return nil
         }
         
@@ -57,11 +56,7 @@ public struct KeychainUtility {
                 kSecAttrAccount as String: key
             ] as [String: Any]
             
-            let status = SecItemDelete(query as CFDictionary)
-            
-            if status != errSecSuccess, let errorMessage = SecCopyErrorMessageString(status, nil) {
-                print("Delete from Keychain failed: \(errorMessage as String)")
-            }
+            _ = SecItemDelete(query as CFDictionary)
         }
     }
 }
