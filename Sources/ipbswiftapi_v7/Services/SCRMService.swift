@@ -41,4 +41,14 @@ public struct SCRMService {
         )
         return apiClient.dispatch(request)
     }
+    
+    public func setEmail(_ email: String) ->
+    AnyPublisher<ResultData<RGClientChannel>, NetworkRequestError> {
+        
+        let request = ClientAreaEmailPOSTRequest(
+            accessToken: AuthStorage.shared.getAccessToken(),
+            email: email
+        )
+        return apiClient.dispatch(request)
+    }
 }

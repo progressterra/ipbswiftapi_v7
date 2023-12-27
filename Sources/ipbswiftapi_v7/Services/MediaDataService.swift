@@ -71,4 +71,14 @@ public struct MediaDataService {
         )
         return apiClient.dispatch(request)
     }
+    
+    public func deleteMediaDataByID(_ idMediaEntity: String) ->
+    AnyPublisher<ResultData<EmptyResultOperation>, NetworkRequestError> {
+        
+        let request = MediaDataDELETEByIDRequest(
+            accessToken: AuthStorage.shared.getAccessToken(),
+            idMediaEntity: idMediaEntity
+        )
+        return apiClient.dispatch(request)
+    }
 }

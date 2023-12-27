@@ -29,6 +29,8 @@ public struct IPBSettings {
     public private(set) static var balanceRegisterBaseURLs = [""]
     public private(set) static var sCRMBaseURLs = [""]
     public private(set) static var mediaDataBaseURLs = [""]
+    public private(set) static var comPlaceBaseURLs = [""]
+    public private(set) static var checklistBaseURLs = [""]
     
     public private(set) static var wantThisDocumentID = ""
     public private(set) static var bankCardDocumentID = ""
@@ -70,6 +72,8 @@ public struct IPBSettings {
         let balanceRegisterBaseURLs: [String]
         let sCRMBaseURLs: [String]
         let mediaDataBaseURLs: [String]
+        let comPlaceBaseURLs: [String]
+        let checklistBaseURLs: [String]
         
         let wantThisDocumentID: String
         let bankCardDocumentID: String
@@ -131,6 +135,8 @@ public struct IPBSettings {
         balanceRegisterBaseURLs = config.balanceRegisterBaseURLs
         sCRMBaseURLs = config.sCRMBaseURLs
         mediaDataBaseURLs = config.mediaDataBaseURLs
+        comPlaceBaseURLs = config.comPlaceBaseURLs
+        checklistBaseURLs = config.checklistBaseURLs
         
         wantThisDocumentID = config.wantThisDocumentID
         bankCardDocumentID = config.bankCardDocumentID

@@ -45,16 +45,20 @@ public extension Request {
     func asURLRequest(baseURL: String, token: String? = nil) -> URLRequest? {
         guard var urlComponents = URLComponents(string: baseURL) else { return nil }
         urlComponents.path = "\(urlComponents.path)\(path)"
-                
+        
         if let params = queryParameters {
-            var queryItems: [URLQueryItem] = []
-            let mirror = Mirror(reflecting: params)
-            for child in mirror.children {
-                if let label = child.label, let value = child.value as? CustomStringConvertible {
-                    queryItems.append(URLQueryItem(name: label, value: value.description))
+            do {
+                let jsonData = try JSONEncoderUtility.encoder.encode(params)
+                if let json = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+                    urlComponents.queryItems = json.map { key, value in
+                        URLQueryItem(name: key, value: "\(value)")
+                    }
+                }
+            } catch {
+                if IPBSettings.isLoggingEnabled {
+                    print("Error encoding query parameters: \(error)")
                 }
             }
-            urlComponents.queryItems = queryItems
         }
         
         guard let finalURL = urlComponents.url else { return nil }
@@ -63,7 +67,7 @@ public extension Request {
         
         /// If token is not set, use the one from the request
         let effectiveToken = token ?? self.token
-
+        
         if let headers {
             request.allHTTPHeaderFields = headers
         }

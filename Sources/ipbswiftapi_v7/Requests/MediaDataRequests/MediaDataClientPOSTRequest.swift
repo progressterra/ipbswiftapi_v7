@@ -27,7 +27,11 @@ struct MediaDataClientPOSTRequest: Request {
     var method: HTTPMethod { .post }
     var token: String? { accessToken }
     var queryParameters: QueryParameters? {
-        QueryParameters(typeContent: typeContent, alias: alias, tag: tag)
+        QueryParameters(
+            typeContent: typeContent,
+            alias: alias,
+            tag: tag
+        )
     }
     var media: [MediaModel]? { medias }
 }
