@@ -21,7 +21,7 @@ public struct RFNomenclatureViewModel: Codable {
     public let commerseDescription: String?
     public let idUnique: String
     public let idEnterprise: String
-    public let dateAdded: String
+    public let dateAdded: Date
     public let dateUpdated: String
     public let dateSoftRemoved: String?
     public let listCatalogCategory: [String]?
