@@ -52,6 +52,7 @@ Create a file named `IPBSettingConfig.json` with the following structure:
     "imageCompressionQuality": 1.0,
     "accessKeyEnterprise": "[your access key]",
     "accessTokenForUnauthorizedUser": "[your access token]",
+    "applicationBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."]
     "clientLoginBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
     "catalogBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
     "productBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
@@ -63,6 +64,8 @@ Create a file named `IPBSettingConfig.json` with the following structure:
     "balanceRegisterBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
     "sCRMBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
     "mediaDataBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
+    "comPlaceBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
+    "checklistBaseURLs": ["[primary base URL]", "[secondary base URL]", "..."],
     "wantThisDocumentID": "[document ID]",
     "bankCardDocumentID": "[document ID]",
     "ruPassportID": "[document ID]",

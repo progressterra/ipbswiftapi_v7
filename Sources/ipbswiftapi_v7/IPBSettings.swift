@@ -18,6 +18,7 @@ public struct IPBSettings {
     public private(set) static var accessKeyEnterprise = ""
     public private(set) static var accessTokenForUnauthorizedUser = ""
     
+    public private(set) static var applicationBaseURLs = [""]
     public private(set) static var clientLoginBaseURLs = [""]
     public private(set) static var catalogBaseURLs = [""]
     public private(set) static var productBaseURLs = [""]
@@ -61,6 +62,7 @@ public struct IPBSettings {
         let accessTokenForUnauthorizedUser: String
         let accessKeyEnterprise: String
         
+        let applicationBaseURLs: [String]
         let clientLoginBaseURLs: [String]
         let catalogBaseURLs: [String]
         let productBaseURLs: [String]
@@ -113,7 +115,7 @@ public struct IPBSettings {
             let config = try decoder.decode(IPBSettingsConfiguration.self, from: data)
             configure(with: config)
         } catch {
-            fatalError("Failed to decode IPBSettingsConfig.json file: \(error.localizedDescription)")
+            fatalError("Failed to decode IPBSettingsConfig.json file: \(error)")
         }
     }
     
@@ -124,6 +126,7 @@ public struct IPBSettings {
         accessKeyEnterprise = config.accessKeyEnterprise
         accessTokenForUnauthorizedUser = config.accessTokenForUnauthorizedUser
         
+        applicationBaseURLs = config.applicationBaseURLs
         clientLoginBaseURLs = config.clientLoginBaseURLs
         catalogBaseURLs = config.catalogBaseURLs
         productBaseURLs = config.productBaseURLs

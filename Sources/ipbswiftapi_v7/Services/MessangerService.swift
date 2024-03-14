@@ -62,4 +62,14 @@ public struct MessengerService {
         )
         return apiClient.dispatch(request)
     }
+    
+    public func patchMessage(with message: RGMessages) ->
+    AnyPublisher<ResultData<RGMessagesViewModel>, NetworkRequestError> {
+        
+        let request = MessagePATCHRequest(
+            accessToken: AuthStorage.shared.getAccessToken(),
+            message: message
+        )
+        return apiClient.dispatch(request)
+    }
 }

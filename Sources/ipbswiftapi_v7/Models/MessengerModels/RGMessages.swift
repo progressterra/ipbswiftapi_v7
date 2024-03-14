@@ -1,13 +1,13 @@
 //
-//  RGMessagesViewModel.swift
-//  
+//  RGMessages.swift
 //
-//  Created by Artemy Volkov on 04.08.2023.
+//
+//  Created by Artemy Volkov on 14.03.2024.
 //
 
 import Foundation
 
-public struct RGMessagesViewModel: Codable {
+public struct RGMessages: Codable {
     public let idDialog: String
     public var contentText: String?
     public let idQuotedMessage: String?
@@ -22,7 +22,6 @@ public struct RGMessagesViewModel: Codable {
     public let dateAdded: Date
     public let dateUpdated: Date
     public let dateSoftRemoved: Date?
-    public let isOwnMessage: Bool
     
     public init(
         idDialog: String,
@@ -38,8 +37,7 @@ public struct RGMessagesViewModel: Codable {
         idEnterprise: String,
         dateAdded: Date,
         dateUpdated: Date,
-        dateSoftRemoved: Date?,
-        isOwnMessage: Bool
+        dateSoftRemoved: Date?
     ) {
         self.idDialog = idDialog
         self.contentText = contentText
@@ -55,6 +53,5 @@ public struct RGMessagesViewModel: Codable {
         self.dateAdded = dateAdded
         self.dateUpdated = dateUpdated
         self.dateSoftRemoved = dateSoftRemoved
-        self.isOwnMessage = isOwnMessage
     }
 }
