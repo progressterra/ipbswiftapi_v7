@@ -1,6 +1,6 @@
 //
-//  HTTPMethodEnum.swift
-//  
+//  HTTPMethod.swift
+//
 //
 //  Created by Artemy Volkov on 09.08.2023.
 //

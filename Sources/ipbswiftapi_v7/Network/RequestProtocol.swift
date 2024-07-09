@@ -7,27 +7,63 @@
 
 import Foundation
 
-/// Request Protocol
+/// A protocol defining the requirements for a network request.
+///
+/// Types conforming to `Request` encapsulate all the necessary information to construct a network request, including the endpoint path, HTTP method, headers, and body. Conformers can optionally include query parameters and multipart/form-data for uploads.
+///
+/// ## Topics
+///
+/// ### Required Properties
+///
+/// - ``path``: The endpoint path for the request.
+/// - ``method``: The HTTP method to be used for the request.
+/// - ``token``: An optional bearer token for authorization.
+/// - ``contentType``: The content type of the request body.
+/// - ``accept``: The expected content type of the response.
+/// - ``body``: The request body encoded from the `Parameters` type.
+/// - ``headers``: Additional HTTP headers for the request.
+/// - ``queryParameters``: The query parameters for the request.
+/// - ``media``: An array of `MediaModel` for multipart/form-data uploads.
+///
+/// ### Creating Requests
+///
+/// - ``asURLRequest(baseURL:token:)``
+///
 public protocol Request {
+    /// The type of parameters to be encoded into the request body.
     associatedtype Parameters: Encodable
+    /// The type of parameters to be encoded into the query string of the request URL.
     associatedtype QueryParameters: Encodable
+    /// The expected return type of the request, which must conform to `Codable` and `ResultContaining`.
     associatedtype ReturnType: Codable & ResultContaining
     
+    /// The endpoint path of the request.
     var path: String { get }
+    /// The HTTP method to be used for the request. Defaults to GET.
     var method: HTTPMethod { get }
+    /// An optional bearer token for authorization. If not provided, the token, if needed, should be included in the headers.
     var token: String? { get }
+    /// The content type of the request body. Defaults to `"application/json"`.
     var contentType: String? { get }
+    /// The expected content type of the response. Defaults to `"text/plain"`.
     var accept: String? { get }
+    /// The request body, encoded from the `Parameters` type.
     var body: Parameters? { get }
+    /// Additional HTTP headers for the request.
     var headers: [String: String]? { get }
+    /// The query parameters for the request, encoded from the `QueryParameters` type.
     var queryParameters: QueryParameters? { get }
-    /// Set if you need to perform multipart/form-data request
+    /// An array of `MediaModel` for multipart/form-data uploads. If provided, the request will be sent as multipart/form-data.
     var media: [MediaModel]? { get }
     
-    /// Transforms an Request into a standard URL request
-    /// - Parameter BaseURLs: API Base URL to be used
-    /// - Parameter token: Use if you want to rebuild request with new token
-    /// - Returns: A ready to use URLRequest
+    /// Constructs a `URLRequest` configured with the properties of the conforming type.
+    ///
+    /// This method combines the base URL with the endpoint path, adds any specified query parameters, sets HTTP headers, and encodes the request body. For requests requiring multipart/form-data, it constructs the appropriate `httpBody`.
+    ///
+    /// - Parameters:
+    ///   - baseURL: The base URL of the API to which the request will be sent.
+    ///   - token: An optional token to override the token provided by the `token` property.
+    /// - Returns: A configured `URLRequest` ready for dispatch, or `nil` if the URL could not be constructed.
     func asURLRequest(baseURL: String, token: String?) -> URLRequest?
 }
 

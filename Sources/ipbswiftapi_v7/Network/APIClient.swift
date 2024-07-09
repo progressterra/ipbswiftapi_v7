@@ -8,14 +8,36 @@
 import Combine
 import Foundation
 
+/// A network client for dispatching requests to a server.
+///
+/// `APIClient` is responsible for managing network requests to specified base URLs. It utilizes a ``NetworkDispatcher`` to handle the actual request dispatching and response handling, including decoding of the response data.
+///
+/// ## Topics
+///
+/// ### Initialization
+///
+/// - ``init(baseURLs:networkDispatcher:)``
+///
+/// ### Making Requests
+///
+/// - ``dispatch(_:token:)``
+///
 public final class APIClient {
     
-    let baseURLs: [String]!
-    let networkDispatcher: NetworkDispatcher!
+    /// The list of base URLs to be used for network requests.
+    ///
+    /// The client will attempt to dispatch requests to these URLs in order until a successful response is received or all URLs have been tried.
+    let baseURLs: [String]
+    let networkDispatcher: NetworkDispatcher
     
     private var retryCount: Int = 0
     private var currentURLIndex: Int = 0
     
+    /// Initializes a new `APIClient` with the specified base URLs and network dispatcher.
+    ///
+    /// - Parameters:
+    ///   - baseURLs: An array of base URL strings to which the client can send requests.
+    ///   - networkDispatcher: The `NetworkDispatcher` instance used for dispatching network requests. Defaults to a default-initialized `NetworkDispatcher`.
     public init(
         baseURLs: [String],
         networkDispatcher: NetworkDispatcher = NetworkDispatcher()
@@ -24,10 +46,17 @@ public final class APIClient {
         self.networkDispatcher = networkDispatcher
     }
     
-    /// Dispatches a Request and returns a publisher
-    /// - Parameter request: Request to Dispatch
-    /// - Parameter token: Token used to retry request with refreshed token
-    /// - Returns: A publisher containing decoded data or an error
+    /// Dispatches a `Request` and returns a publisher emitting the decoded response or an `NetworkRequestError`.
+    ///
+    /// This method creates a `URLRequest` from the provided `Request` instance and dispatches it using the `NetworkDispatcher`.
+    /// If token is expired it will try to refresh it and retry the request automatically.
+    /// If ssl, timeout or network error occurs it will automatically switch to another base URL if any or throw an error.
+    /// If the request fails or decoding fails, it emits a `NetworkRequestError` that contains the error message ready for UI.
+    ///
+    /// - Parameters:
+    ///   - request: The `Request` instance representing the network request to be dispatched.
+    ///   - token: An optional token string used for retrying the request with a refreshed token. This parameter should not be used directly.
+    /// - Returns: A publisher that emits the decoded response data on success or a `NetworkRequestError` on failure.
     public func dispatch<R: Request>(_ request: R, token: String? = nil) -> AnyPublisher<R.ReturnType, NetworkRequestError> {
         guard let urlRequest = request.asURLRequest(baseURL: baseURLs[currentURLIndex], token: token) else {
             return Fail(outputType: R.ReturnType.self, failure: .badRequest("Ошибка запроса"))

@@ -1,5 +1,5 @@
 //
-//  NetworkRequestErrorEnum.swift
+//  NetworkRequestError.swift
 //
 //
 //  Created by Artemy Volkov on 09.08.2023.
@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Custom error type for network requests
 public enum NetworkRequestError: LocalizedError, Equatable {
     case invalidRequest(String)
     case badRequest(String)

@@ -12,7 +12,7 @@ public struct ClientsViewModel: Codable {
     public let soname: String?
     public let patronymic: String?
     public let sex: TypeSex?
-    public let dateOfBirth: String?
+    public let dateOfBirth: Date?
     public let dateOfRegister: String?
     public let comment: String?
     public let idUnique: String

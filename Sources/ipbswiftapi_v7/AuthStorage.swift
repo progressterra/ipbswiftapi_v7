@@ -1,10 +1,40 @@
+//
+//  AuthStorage.swift
+//
+//
+//  Created by Artemy Volkov on 06.07.2023.
+//
+
 import Foundation
 import Combine
 
+/// Manages authentication token storage and refresh functionality.
+///
+/// `AuthStorage` is a singleton class responsible for storing, retrieving, and refreshing authentication tokens used for network requests. It uses the Keychain for secure token storage and provides mechanisms to refresh tokens as needed. This class also tracks the user's login status based on the presence of tokens.
+///
+/// ## Topics
+///
+/// ### Getting Started
+///
+/// - ``shared``
+///
+/// ### Checking Login Status
+///
+/// - ``isLoggedIn``
+///
+/// ### Token Management
+///
+/// - ``getAccessToken()``
+/// - ``getRefreshToken()``
+/// - ``updateTokenStorage(for:)``
+/// - ``logout()``
+///
 public class AuthStorage: ObservableObject {
     
+    /// The singleton instance of `AuthStorage`.
     public static let shared = AuthStorage()
     
+    /// Published property that indicates whether the user is logged in based on the presence of a refresh token.
     @Published public var isLoggedIn: Bool = false
     
     private let authService = AuthorizationService()
@@ -96,14 +126,29 @@ extension AuthStorage {
 
 // MARK: - Tokens management
 extension AuthStorage {
+    /// Retrieves the current access token.
+    ///
+    /// This method returns the access token stored in the Keychain. If no token is stored, it returns a default token for unauthorized users as defined in `IPBSettings`.
+    ///
+    /// - Returns: The current access token as a `String`.
     public func getAccessToken() -> String {
         accessTokenCache ?? loadToken(forKey: accessTokenKey) ?? IPBSettings.accessTokenForUnauthorizedUser
     }
     
+    /// Retrieves the current refresh token.
+    ///
+    /// This method returns the refresh token stored in the Keychain. If no token is stored, it returns an empty `String`.
+    ///
+    /// - Returns: The current refresh token as a `String`.
     public func getRefreshToken() -> String {
         refreshTokenCache ?? loadToken(forKey: refreshTokenKey) ?? ""
     }
     
+    /// Updates the token storage with new token data.
+    ///
+    /// This method saves the provided access and refresh tokens to the Keychain and updates the cache. It also updates the login status based on the presence of the refresh token.
+    ///
+    /// - Parameter data: An optional `ResultAuthAsJWT` containing the new access and refresh tokens.
     public func updateTokenStorage(for data: ResultAuthAsJWT?) {
         if let refreshToken = data?.refreshToken {
             saveToken(refreshToken, forKey: refreshTokenKey)
@@ -115,6 +160,9 @@ extension AuthStorage {
         }
     }
     
+    /// Logs out the current user.
+    ///
+    /// This method clears the stored access and refresh tokens from the Keychain and the cache. It also updates the login status to reflect that the user is no longer logged in.
     public func logout() {
         KeychainUtility.delete(key: accessTokenKey)
         KeychainUtility.delete(key: refreshTokenKey)
