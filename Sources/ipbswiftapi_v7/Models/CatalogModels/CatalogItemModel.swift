@@ -24,5 +24,5 @@ public enum TypeDisplayCategoryCatalog: String, Codable {
 
 public enum TypeFormatViewProduct: String, Codable {
     case wideFormat = "wideFormat"
-    case towInLine = "towInline"
+    case towInLine = "towInLine"
 }
