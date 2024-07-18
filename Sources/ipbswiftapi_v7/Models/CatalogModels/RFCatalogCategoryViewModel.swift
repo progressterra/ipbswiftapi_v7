@@ -12,6 +12,7 @@ public struct RFCatalogCategoryViewModel: Codable, Hashable {
     public let displayingType: TypeDisplayCategoryCatalog
     public let formatViewProductType: TypeFormatViewProduct
     public let name: String?
+    public let displayName: String?
     public let description: String?
     public let imageDataInJSON: String?
     public let order: Int
