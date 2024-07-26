@@ -106,6 +106,7 @@ extension AuthStorage {
                         switch completion {
                         case .failure(let error):
                             promise(.failure(error))
+                            self.logout()
                         case .finished:
                             break
                         }
