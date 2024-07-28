@@ -71,4 +71,5 @@ public enum TypeSaleReturn: String, Codable {
     case returnSale = "returnSale"
     case correct = "correct"
     case marketiing = "marketiing"
+    case saleForBonuses = "saleForBonuses"
 }
