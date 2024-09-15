@@ -79,4 +79,16 @@ public struct SCRMService {
         )
         return apiClient.dispatch(request)
     }
+    
+    
+    /// Deletes an item from the shopping cart.
+    /// - Returns: A publisher emitting the updated cart state without the specified item or a `NetworkRequestError`.
+    public func deleteClient() ->
+    AnyPublisher<ResultData<EmptyResultOperation>, NetworkRequestError> {
+        
+        let request = ClientAreaDELETERequest(
+            accessToken: AuthStorage.shared.getAccessToken()
+        )
+        return apiClient.dispatch(request)
+    }
 }
